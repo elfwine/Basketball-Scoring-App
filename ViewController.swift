@@ -15,9 +15,11 @@ class ViewController: UIViewController, UITableViewDataSource {
     @IBOutlet weak var addGameButton: UIButton!
     
     @IBOutlet weak var pastGamesTable: UITableView!
+    
     var games = [NSManagedObject]()
+    var players = [NSManagedObject]()
     
-    
+    let NathanHale = ["Sam Leach","Sam Nasralla","Julien Streetman","Ishmael Simpson", "Trey McAdams","Stieg Smith", "TJ Williams","Dempsey Hope","Kateel Barnett","Malcolm Gulyard","Khepra Mims"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -133,6 +135,30 @@ class ViewController: UIViewController, UITableViewDataSource {
             
             games.insert(gameObject, atIndex: games.count)
             
+            
+            for(var i=0; i<NathanHale.count; i++) {
+            
+                let e =  NSEntityDescription.entityForName("Player",
+                    inManagedObjectContext:
+                    managedContext)
+                
+                //creates new swing object
+                let playerObject = NSManagedObject(entity: e!,
+                    insertIntoManagedObjectContext:managedContext)
+                playerObject.setValue(newGameNum, forKey: "game")
+                playerObject.setValue(NathanHale[i], forKey: "name")
+                
+                var error: NSError?
+                do {
+                    try managedContext.save()
+                } catch var error1 as NSError {
+                    error = error1
+                    print("Could not save \(error), \(error?.userInfo)")
+                }
+                
+                players.insert(gameObject, atIndex: i)
+                
+            }
             do {
                 try managedContext.save()
             } catch _ {
@@ -140,6 +166,34 @@ class ViewController: UIViewController, UITableViewDataSource {
             
             controller.game = newGameNum
             controller.firstTime = true
+            controller.players = players
+        }
+        if(segue.identifier == "goToBoxScore") {
+            if let indexPath = self.pastGamesTable.indexPathForSelectedRow {
+                let controller = segue.destinationViewController as! BoxScoreViewController
+                controller.game = indexPath.row
+                
+                let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+                let managedContext = appDelegate.managedObjectContext
+                let fetchRequest = NSFetchRequest(entityName:"Player")
+                let error: NSError?
+                var fetchedResults = [NSManagedObject]()
+                do {
+                    fetchedResults = try managedContext.executeFetchRequest(fetchRequest) as! [NSManagedObject]
+                } catch let error as NSError {
+                    print("Fetch failed: \(error.localizedDescription)")
+                }
+                let pList = fetchedResults
+                var playersFromGame = [NSManagedObject]()
+                
+                for(var i=0; i<pList.count; i++) {
+                    if(pList[i].valueForKey("game") as! Int == indexPath.row) {
+                        playersFromGame.insert(pList[i], atIndex: playersFromGame.count)
+                    }
+                }
+    
+                controller.players = playersFromGame
+            }
         }
     }
 }

@@ -20,6 +20,8 @@ class SubViewController: UIViewController, UITableViewDataSource, UITableViewDel
     var bench = [String]()
     var counter = 0
     var game = Int()
+    var games = [NSManagedObject]()
+    var players = [NSManagedObject]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,6 +78,8 @@ class SubViewController: UIViewController, UITableViewDataSource, UITableViewDel
             controller.game = game
             controller.lineup = lineup
             controller.bench = bench
+            controller.games = games
+            controller.players = players
         }
     }
     

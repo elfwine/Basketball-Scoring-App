@@ -19,68 +19,41 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Player Name" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Iam-br-i4H">
-                                <rect key="frame" x="20" y="20" width="560" height="44"/>
+                                <rect key="frame" x="0.0" y="20" width="600" height="80"/>
                                 <animations/>
+                                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="q3h-RS-feN"/>
+                                    <constraint firstAttribute="height" constant="80" id="q3h-RS-feN"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Egh-7j-OWE">
-                                <rect key="frame" x="20" y="72" width="447" height="359"/>
-                                <animations/>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="qPB-M9-x7q">
-                                    <size key="itemSize" width="50" height="50"/>
-                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                </collectionViewFlowLayout>
-                                <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="TextCell" id="UmV-W4-Jcp" customClass="TextCell" customModule="scorer" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EJc-Wf-TBg">
-                                                    <rect key="frame" x="4" y="14" width="42" height="21"/>
-                                                    <animations/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                            <animations/>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                        </view>
-                                        <animations/>
-                                        <connections>
-                                            <outlet property="textLabel" destination="EJc-Wf-TBg" id="4v9-4Z-dbZ"/>
-                                        </connections>
-                                    </collectionViewCell>
-                                </cells>
-                            </collectionView>
                         </subviews>
                         <animations/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="Iam-br-i4H" firstAttribute="leading" secondItem="BGJ-Kn-zZz" secondAttribute="leadingMargin" constant="-20" id="5qt-lh-raT"/>
                             <constraint firstItem="Iam-br-i4H" firstAttribute="trailing" secondItem="BGJ-Kn-zZz" secondAttribute="trailingMargin" id="UJH-nT-B7v"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Iam-br-i4H" secondAttribute="trailing" constant="-20" id="hCy-LN-aCS"/>
                             <constraint firstItem="Iam-br-i4H" firstAttribute="top" secondItem="dw1-um-Ow8" secondAttribute="bottom" id="jkr-Hu-TDf"/>
                             <constraint firstItem="Iam-br-i4H" firstAttribute="leading" secondItem="BGJ-Kn-zZz" secondAttribute="leadingMargin" id="oZy-cw-uzy"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="UJH-nT-B7v"/>
+                                <exclude reference="oZy-cw-uzy"/>
+                            </mask>
+                        </variation>
                     </view>
                     <connections>
                         <outlet property="playerNameLabel" destination="Iam-br-i4H" id="DJd-kY-DAy"/>
-                        <outlet property="tableCollectionView" destination="Egh-7j-OWE" id="nW0-NI-cg4"/>
                         <segue destination="f7L-G6-G9A" kind="show" identifier="backToBox" id="0qH-9Y-cso"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Zv-6r-RKi" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1251" y="90"/>
+            <point key="canvasLocation" x="-1459" y="258"/>
         </scene>
         <!--Box Score View Controller-->
         <scene sceneID="EER-FN-Vjc">
@@ -170,11 +143,12 @@
                         <outlet property="boxScore" destination="UTd-Fr-UsI" id="3xE-rN-8et"/>
                         <outlet property="opponentLabel" destination="a0v-EJ-Trk" id="Gxk-5Y-e77"/>
                         <segue destination="BYZ-38-t0r" kind="show" identifier="boxToHome" id="s5V-Eb-zx0"/>
+                        <segue destination="vTt-pt-ttf" kind="show" identifier="boxToScoring" id="Ey8-iW-CzU"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Z8I-IA-HSr" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-529" y="286"/>
+            <point key="canvasLocation" x="-525" y="291"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
@@ -189,7 +163,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hJd-rq-542">
-                                <rect key="frame" x="20" y="20" width="560" height="106"/>
+                                <rect key="frame" x="0.0" y="20" width="600" height="106"/>
                                 <animations/>
                                 <color key="backgroundColor" red="0.099890159762424019" green="0.74128763089005234" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
@@ -233,6 +207,7 @@
                             <constraint firstItem="hJd-rq-542" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="KP4-rx-MMx"/>
                             <constraint firstItem="oQf-9G-s2E" firstAttribute="top" secondItem="hJd-rq-542" secondAttribute="bottom" id="Kd7-Ma-g4n"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="oQf-9G-s2E" secondAttribute="bottom" id="MSt-Np-Lu1"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="hJd-rq-542" secondAttribute="trailing" constant="-20" id="Q8k-Vi-SaJ"/>
                             <constraint firstItem="oQf-9G-s2E" firstAttribute="top" secondItem="hJd-rq-542" secondAttribute="bottom" id="VsK-GT-cZT"/>
                             <constraint firstItem="hJd-rq-542" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="Wcf-pb-DZz"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="oQf-9G-s2E" secondAttribute="bottom" constant="20" id="X03-2H-rIS"/>
@@ -243,13 +218,16 @@
                             <constraint firstItem="hJd-rq-542" firstAttribute="trailing" secondItem="8bC-Xf-vdC" secondAttribute="trailingMargin" id="qxW-Rb-2E2"/>
                             <constraint firstItem="oQf-9G-s2E" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" id="uVF-Na-fP1"/>
                             <constraint firstItem="oQf-9G-s2E" firstAttribute="top" secondItem="hJd-rq-542" secondAttribute="bottom" id="wbB-tQ-KeD"/>
+                            <constraint firstItem="hJd-rq-542" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="xmR-Ve-cCL"/>
                             <constraint firstItem="oQf-9G-s2E" firstAttribute="top" secondItem="hJd-rq-542" secondAttribute="bottom" id="zhY-cg-9wf"/>
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
                                 <exclude reference="4cq-hh-rYx"/>
                                 <exclude reference="KP4-rx-MMx"/>
+                                <exclude reference="Wcf-pb-DZz"/>
                                 <exclude reference="nsp-lP-wN2"/>
+                                <exclude reference="qxW-Rb-2E2"/>
                                 <exclude reference="7BR-86-ppO"/>
                                 <exclude reference="8qS-6y-qsF"/>
                                 <exclude reference="Kd7-Ma-g4n"/>
@@ -290,11 +268,12 @@
                     <simulatedOrientationMetrics key="simulatedOrientationMetrics" orientation="landscapeRight"/>
                     <connections>
                         <segue destination="zU7-7T-ePi" kind="show" identifier="subPlayers" id="DzI-VY-02q"/>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="scoringToHome" id="MWx-H8-9Vv"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bak-Ih-Vdt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="995" y="110"/>
+            <point key="canvasLocation" x="1131" y="302"/>
         </scene>
         <!--SubViewController-->
         <scene sceneID="Jsu-WK-sHM">
@@ -448,11 +427,12 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HQE-LX-PMl" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1747" y="105"/>
+            <point key="canvasLocation" x="2091" y="317"/>
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="0qH-9Y-cso"/>
-        <segue reference="q3Z-EK-RU4"/>
+        <segue reference="7fw-fP-3za"/>
+        <segue reference="MWx-H8-9Vv"/>
+        <segue reference="Qxr-5G-bYa"/>
     </inferredMetricsTieBreakers>
 </document>

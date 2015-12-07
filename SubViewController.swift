@@ -37,7 +37,15 @@ class SubViewController: UIViewController, UITableViewDataSource, UITableViewDel
     }
     
     func done(sender: UIButton) {
-        performSegueWithIdentifier("returnToScoring", sender: nil)
+        if(lineup.count == 5) {
+            performSegueWithIdentifier("returnToScoring", sender: nil)
+        } else {
+            let alert = UIAlertView()
+            alert.title = "Idiot:"
+            alert.message = "You need five players to play basketball"
+            alert.addButtonWithTitle("OK")
+            alert.show()
+        }
     }
     
     override func didReceiveMemoryWarning() {

@@ -21,7 +21,8 @@ class ScoringViewController: UIViewController {
     var firstTime = false
     
     let subButton = UIButton()
-    
+    let homeButton = UIButton()
+
     let name1 = UILabel()
     let name2 = UILabel()
     let name3 = UILabel()
@@ -479,15 +480,26 @@ class ScoringViewController: UIViewController {
     
     func addSubButton() {
         subButton.addTarget(self, action: "goToSub:", forControlEvents: UIControlEvents.TouchUpInside)
-        subButton.frame = CGRectMake(0 , self.view.frame.height / 48 * 43, self.view.frame.size.width, (self.view.frame.size.height / 48) * 5)
+        subButton.frame = CGRectMake(self.view.frame.size.width / 2, self.view.frame.height / 48 * 43, self.view.frame.size.width / 2, (self.view.frame.size.height / 48) * 5)
         subButton.setTitle("Substitutions", forState: UIControlState.Normal)
         subButton.backgroundColor = UIColor.blueColor()
         subButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
         self.view.addSubview(subButton)
+        
+        homeButton.addTarget(self, action: "returnHome:", forControlEvents: UIControlEvents.TouchUpInside)
+        homeButton.frame = CGRectMake(0 , self.view.frame.height / 48 * 43, self.view.frame.size.width / 2, (self.view.frame.size.height / 48) * 5)
+        homeButton.setTitle("Home", forState: UIControlState.Normal)
+        homeButton.backgroundColor = UIColor.redColor()
+        homeButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        self.view.addSubview(homeButton)
     }
     
     func goToSub(sender: UIButton) {
         performSegueWithIdentifier("subPlayers", sender: nil)
+    }
+    
+    func returnHome(sender: UIButton) {
+        performSegueWithIdentifier("scoringToHome", sender: nil)
     }
     
     override func viewDidLoad() {
@@ -548,36 +560,35 @@ class ScoringViewController: UIViewController {
     
     override func viewDidAppear(animated: Bool) {
         if(firstTime == true) {
-            let alert = UIAlertController(title: "Opponent", message: "", preferredStyle: .Alert)
-            
-            alert.addTextFieldWithConfigurationHandler({ (textField) -> Void in
+                let alert = UIAlertController(title: "Opponent", message: "", preferredStyle: .Alert)
+                alert.addTextFieldWithConfigurationHandler({ (textField) -> Void in
+                    
+                })
                 
-            })
-            
-            alert.addAction(UIAlertAction(title: "Done", style: .Default, handler: { (action) -> Void in
-                let textField = alert.textFields![0]
-                //CoreData stuff
-                let appDelegate =
-                UIApplication.sharedApplication().delegate as! AppDelegate
-                let managedContext = appDelegate.managedObjectContext
-                let entity =  NSEntityDescription.entityForName("Game",
-                    inManagedObjectContext:
-                    managedContext)
-                
-                
-                self.games[self.game].setValue(textField.text, forKey: "opponent")
-                
-                do {
-                    try managedContext.save()
-                } catch _ {
-                }
-                
-            }))
-            self.presentViewController(alert, animated: true, completion: nil)
-
+                alert.addAction(UIAlertAction(title: "Done", style: .Default, handler: { (action) -> Void in
+                    let textField = alert.textFields![0]
+                    //CoreData stuff
+                    let appDelegate =
+                    UIApplication.sharedApplication().delegate as! AppDelegate
+                    let managedContext = appDelegate.managedObjectContext
+                    let entity =  NSEntityDescription.entityForName("Game",
+                        inManagedObjectContext:
+                        managedContext)
+                    
+                    
+                    self.games[self.game].setValue(textField.text, forKey: "opponent")
+                    
+                    do {
+                        try managedContext.save()
+                    } catch _ {
+                    }
+                    
+                }))
+                self.presentViewController(alert, animated: true, completion: nil)
         }
     }
-    
+
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

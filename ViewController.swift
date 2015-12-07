@@ -40,6 +40,17 @@ class ViewController: UIViewController, UITableViewDataSource {
         }
         games = fetchedResults
         
+        let fetchReq = NSFetchRequest(entityName:"Player")
+        let err: NSError?
+        var fetchedR = [NSManagedObject]()
+        do {
+            fetchedR = try managedContext.executeFetchRequest(fetchReq) as! [NSManagedObject]
+        } catch let err as NSError {
+            
+            print("Fetch failed: \(err.localizedDescription)")
+        }
+        players = fetchedR
+        
         pastGamesTable.dataSource = self
     }
 
@@ -61,7 +72,7 @@ class ViewController: UIViewController, UITableViewDataSource {
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath) 
         
         
-        cell.textLabel!.text = games[indexPath.row].valueForKey("opponent") as? String
+        cell.textLabel!.text = (games[indexPath.row].valueForKey("opponent") as! String) + " on " + (games[indexPath.row].valueForKey("date") as! String)
         if((indexPath.row as Int) % 2 == 0 ) {
             cell.backgroundColor = UIColor.lightGrayColor()
         } else {
@@ -79,8 +90,7 @@ class ViewController: UIViewController, UITableViewDataSource {
             if editingStyle == .Delete {
                 
                 //CoreData stuff
-                let appDelegate =
-                UIApplication.sharedApplication().delegate as! AppDelegate
+                let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
                 let managedContext = appDelegate.managedObjectContext
                 let entity =  NSEntityDescription.entityForName("Game",
                     inManagedObjectContext:
@@ -88,8 +98,25 @@ class ViewController: UIViewController, UITableViewDataSource {
                 
                 managedContext.deleteObject(games[indexPath.row])
                 
-                
                 games.removeAtIndex(indexPath.row)
+                
+                print("!")
+                
+                for(var i=0; i<players.count; i++) {
+                    if(players[i].valueForKey("game") as! Int == indexPath.row) {
+                        managedContext.deleteObject(players[i])
+                        players.removeAtIndex(i)
+                        i = i - 1
+                    }
+                }
+                
+                print("!")
+
+                reduceGameIDsByOne(indexPath.row)
+                reduceGameNumsByOne(indexPath.row)
+                
+                print("!")
+                
                 do {
                     try managedContext.save()
                 } catch _ {
@@ -98,12 +125,84 @@ class ViewController: UIViewController, UITableViewDataSource {
                 
                 
                 
+                
             } else if editingStyle == .Insert {
                 // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
             }
     }
     
+    func reduceGameNumsByOne(row: Int) {
+        //CoreData stuff
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        let entity =  NSEntityDescription.entityForName("Player",
+            inManagedObjectContext:
+            managedContext)
+        
+        
+        for(var i=0; i<players.count; i++) {
+            if let gamenum = players[i].valueForKey("game") {
+                if((gamenum as! Int) > row) {
+                    players[i].setValue((gamenum as! Int) - 1, forKey: "game")
+                }
+            }
+        }
+    }
     
+    func reduceGameIDsByOne(row: Int) {
+        //CoreData stuff
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        let entity =  NSEntityDescription.entityForName("Game",
+            inManagedObjectContext:
+            managedContext)
+        
+        
+        
+        for(var l=row; l<games.count; l++) {
+            if let id = games[l].valueForKey("id") {
+                games[l].setValue((id as! Int) - 1, forKey: "id")
+            }
+        }
+    }
+    
+    func getDate() -> String {
+        
+        //get the month
+        let getMonth = NSDateFormatter()
+        getMonth.dateFormat = "MM"
+        let monthNum = getMonth.stringFromDate(NSDate())
+        
+        //get the day
+        let getDay = NSDateFormatter()
+        getDay.dateFormat = "dd"
+        var day = getDay.stringFromDate(NSDate())
+        
+        if(Int(day) < 10) {
+            day =  String(day[day.endIndex.predecessor()])
+        }
+        
+        var month = ""
+        
+        if(monthNum == "01") { month = "January" }
+        else if(monthNum == "02") { month = "February" }
+        else if(monthNum == "03") { month = "March" }
+        else if(monthNum == "04") { month = "April" }
+        else if(monthNum == "05") { month = "May" }
+        else if(monthNum == "06") { month = "June" }
+        else if(monthNum == "07") { month = "July" }
+        else if(monthNum == "08") { month = "August" }
+        else if(monthNum == "09") { month = "September" }
+        else if(monthNum == "10") { month = "October" }
+        else if(monthNum == "11") { month = "November" }
+        else if(monthNum == "12") { month = "December" }
+        
+        let date = month + " " + day
+        
+        return date
+        
+    }
+
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "goToStatEntry" {
@@ -120,10 +219,13 @@ class ViewController: UIViewController, UITableViewDataSource {
                 inManagedObjectContext:
                 managedContext)
             
+            let date = getDate()
+            
             //creates new swing object
             let gameObject = NSManagedObject(entity: entity!,
                 insertIntoManagedObjectContext:managedContext)
             gameObject.setValue(newGameNum, forKey: "id")
+            gameObject.setValue(date, forKey: "date")
             
             var error: NSError?
             do {

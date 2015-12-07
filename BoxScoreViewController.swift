@@ -45,7 +45,9 @@ class BoxScoreViewController: UIViewController, UITableViewDataSource {
         
         for(var i = 0; i<games.count; i++) {
             if(games[i].valueForKey("id") as! Int == game) {
-                opponentLabel.text = games[i].valueForKey("Opponent") as! String
+                var opponent = games[i].valueForKey("opponent") as! String
+                var date = games[i].valueForKey("date") as! String
+                opponentLabel.text = opponent + " on " + date
             }
         }
         
@@ -144,7 +146,7 @@ class BoxScoreViewController: UIViewController, UITableViewDataSource {
     }
     
     func editGame(sender: UIButton) {
-        
+        performSegueWithIdentifier("boxToScoring", sender: nil)
     }
     
     
@@ -155,7 +157,15 @@ class BoxScoreViewController: UIViewController, UITableViewDataSource {
                 controller.players = players
                 controller.game = game
                 controller.player = indexPath.row
+                controller.opponent = games[game].valueForKey("opponent") as! String
+                controller.date = games[game].valueForKey("date") as! String
             }
+        }
+        if(segue.identifier == "boxToScoring") {
+            let controller = segue.destinationViewController as! ScoringViewController
+            controller.players = players
+            controller.game = game
+            controller.games = games
         }
     }
     

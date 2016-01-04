@@ -16,6 +16,7 @@ class BoxScoreViewController: UIViewController, UITableViewDataSource {
     @IBOutlet weak var playerNameLabel: UILabel!
     @IBOutlet weak var opponentLabel: UILabel!
     
+    var team = Int()
     var games = [NSManagedObject]()
     @IBOutlet weak var nameLabel: UILabel!
     var players = [NSManagedObject]()
@@ -50,6 +51,8 @@ class BoxScoreViewController: UIViewController, UITableViewDataSource {
                 opponentLabel.text = opponent + " on " + date
             }
         }
+        
+        print(game)
         
         print(players.count)
         
@@ -159,6 +162,7 @@ class BoxScoreViewController: UIViewController, UITableViewDataSource {
                 controller.player = indexPath.row
                 controller.opponent = games[game].valueForKey("opponent") as! String
                 controller.date = games[game].valueForKey("date") as! String
+                controller.team = team
             }
         }
         if(segue.identifier == "boxToScoring") {
@@ -166,6 +170,11 @@ class BoxScoreViewController: UIViewController, UITableViewDataSource {
             controller.players = players
             controller.game = game
             controller.games = games
+            controller.team = team
+        }
+        if(segue.identifier == "boxToHome") {
+            let controller = segue.destinationViewController as! ViewController
+            controller.team = team
         }
     }
     

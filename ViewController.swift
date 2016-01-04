@@ -6,26 +6,35 @@
 //  Copyright © 2015 Jacob Kohn. All rights reserved.
 //
 
+
+// DELETING GAMES/PLAYERS WHEN DELETING TEAMS
+// CAT AVERAGE STRINGS
+
+
+
 import UIKit
 import CoreData
 import Foundation
 
 class ViewController: UIViewController, UITableViewDataSource {
 
-    @IBOutlet weak var addGameButton: UIButton!
     
     @IBOutlet weak var pastGamesTable: UITableView!
     
+    let backToTeamsButton = UIButton()
+    let addGameButton = UIButton()
+    
+    var allGames = [NSManagedObject]()
     var games = [NSManagedObject]()
     var players = [NSManagedObject]()
-    
-    let NathanHale = ["Sam Leach","Sam Nasralla","Julien Streetman","Ishmael Simpson", "Trey McAdams","Stieg Smith", "TJ Williams","Dempsey Hope","Kateel Barnett","Malcolm Gulyard","Khepra Mims"]
+    var playerNames = [String]()
+    var team = Int()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        addGameButton.addTarget(self, action: "newGame:", forControlEvents: UIControlEvents.TouchUpInside)
+        configureButtons()
         
         let appDelegate =
         UIApplication.sharedApplication().delegate as! AppDelegate
@@ -38,7 +47,13 @@ class ViewController: UIViewController, UITableViewDataSource {
         } catch let error as NSError {
             print("Fetch failed: \(error.localizedDescription)")
         }
-        games = fetchedResults
+        allGames = fetchedResults
+        
+        for(var i=0; i<allGames.count; i++) {
+            if(allGames[i].valueForKey("team") as! Int == team) {
+                games.insert(allGames[i], atIndex: games.count)
+            }
+        }
         
         let fetchReq = NSFetchRequest(entityName:"Player")
         let err: NSError?
@@ -51,8 +66,45 @@ class ViewController: UIViewController, UITableViewDataSource {
         }
         players = fetchedR
         
+        let fetchR = NSFetchRequest(entityName:"Joint")
+        let e: NSError?
+        var fR = [NSManagedObject]()
+        do {
+            fR = try managedContext.executeFetchRequest(fetchR) as! [NSManagedObject]
+        } catch let err as NSError {
+            
+            print("Fetch failed: \(err.localizedDescription)")
+        }
+        let joint = fR
+        
+        for(var l=0; l<joint.count; l++) {
+            if(joint[l].valueForKey("teamnum") as! Int == team) {
+                playerNames.insert(joint[l].valueForKey("playername") as! String, atIndex: playerNames.count)
+            }
+        }
+        
+        
         pastGamesTable.dataSource = self
     }
+    
+    func configureButtons() {
+        backToTeamsButton.frame = CGRectMake(0, 0, self.view.frame.size.width / 2, 60)
+        backToTeamsButton.backgroundColor = UIColor.blueColor()
+        backToTeamsButton.setTitle("Back To Teams", forState: .Normal)
+        backToTeamsButton.addTarget(self, action: "returnToTeams:", forControlEvents: UIControlEvents.TouchUpInside)
+        self.view.addSubview(backToTeamsButton)
+        
+        addGameButton.frame = CGRectMake(self.view.frame.size.width / 2, 0, self.view.frame.size.width / 2, 60)
+        addGameButton.addTarget(self, action: "newGame:", forControlEvents: UIControlEvents.TouchUpInside)
+        addGameButton.backgroundColor = UIColor.greenColor()
+        addGameButton.setTitle("+New Game+", forState: .Normal)
+        self.view.addSubview(addGameButton)
+    }
+    
+    func returnToTeams(sender: UIButton) {
+        self.performSegueWithIdentifier("returnToTeams", sender: nil)
+    }
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -96,11 +148,12 @@ class ViewController: UIViewController, UITableViewDataSource {
                     inManagedObjectContext:
                     managedContext)
                 
+                let gameID = games[indexPath.row].valueForKey("id") as! Int
+                
                 managedContext.deleteObject(games[indexPath.row])
                 
                 games.removeAtIndex(indexPath.row)
-                
-                print("!")
+
                 
                 for(var i=0; i<players.count; i++) {
                     if(players[i].valueForKey("game") as! Int == indexPath.row) {
@@ -109,13 +162,10 @@ class ViewController: UIViewController, UITableViewDataSource {
                         i = i - 1
                     }
                 }
-                
-                print("!")
 
-                reduceGameIDsByOne(indexPath.row)
+                reduceGameIDsByOne(gameID)
                 reduceGameNumsByOne(indexPath.row)
-                
-                print("!")
+                repopulateGames(indexPath.row)
                 
                 do {
                     try managedContext.save()
@@ -123,12 +173,37 @@ class ViewController: UIViewController, UITableViewDataSource {
                 }
                 tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Fade)
                 
-                
-                
-                
             } else if editingStyle == .Insert {
                 // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
             }
+    }
+    
+    func repopulateGames(row: Int) {
+        //CoreData stuff
+        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        let fetchRequest = NSFetchRequest(entityName:"Game")
+        let entity =  NSEntityDescription.entityForName("Game",
+            inManagedObjectContext:
+            managedContext)
+        
+        let error: NSError?
+        var fetchedResults = [NSManagedObject]()
+        do {
+            fetchedResults = try managedContext.executeFetchRequest(fetchRequest) as! [NSManagedObject]
+        } catch let error as NSError {
+            print("Fetch failed: \(error.localizedDescription)")
+        }
+        allGames = fetchedResults
+        
+        games.removeAll()
+        
+        for(var i=0; i<allGames.count; i++) {
+            if(allGames[i].valueForKey("team") as! Int == self.team) {
+                self.games.insert(allGames[i], atIndex: self.games.count)
+            }
+        }
+        
     }
     
     func reduceGameNumsByOne(row: Int) {
@@ -157,11 +232,9 @@ class ViewController: UIViewController, UITableViewDataSource {
             inManagedObjectContext:
             managedContext)
         
-        
-        
-        for(var l=row; l<games.count; l++) {
-            if let id = games[l].valueForKey("id") {
-                games[l].setValue((id as! Int) - 1, forKey: "id")
+        for(var l=row; l<allGames.count; l++) {
+            if let id = allGames[l].valueForKey("id") {
+                allGames[l].setValue((id as! Int) - 1, forKey: "id")
             }
         }
     }
@@ -207,7 +280,7 @@ class ViewController: UIViewController, UITableViewDataSource {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "goToStatEntry" {
  
-            let newGameNum = games.count
+            let newGameNum = allGames.count
             
             let controller = segue.destinationViewController as! ScoringViewController
             
@@ -226,6 +299,7 @@ class ViewController: UIViewController, UITableViewDataSource {
                 insertIntoManagedObjectContext:managedContext)
             gameObject.setValue(newGameNum, forKey: "id")
             gameObject.setValue(date, forKey: "date")
+            gameObject.setValue(team, forKey: "team")
             
             var error: NSError?
             do {
@@ -237,18 +311,19 @@ class ViewController: UIViewController, UITableViewDataSource {
             
             games.insert(gameObject, atIndex: games.count)
             
-            
-            for(var i=0; i<NathanHale.count; i++) {
+            for(var i=0; i<playerNames.count; i++) {
             
                 let e =  NSEntityDescription.entityForName("Player",
                     inManagedObjectContext:
                     managedContext)
                 
-                //creates new swing object
+                //creates new player object
                 let playerObject = NSManagedObject(entity: e!,
                     insertIntoManagedObjectContext:managedContext)
+                print(newGameNum)
                 playerObject.setValue(newGameNum, forKey: "game")
-                playerObject.setValue(NathanHale[i], forKey: "name")
+                playerObject.setValue(playerNames[i], forKey: "name")
+                playerObject.setValue(false, forKey: "inlineup")
                 
                 var error: NSError?
                 do {
@@ -258,7 +333,7 @@ class ViewController: UIViewController, UITableViewDataSource {
                     print("Could not save \(error), \(error?.userInfo)")
                 }
                 
-                players.insert(gameObject, atIndex: i)
+                players.insert(playerObject, atIndex: i)
                 
             }
             do {
@@ -269,11 +344,24 @@ class ViewController: UIViewController, UITableViewDataSource {
             controller.game = newGameNum
             controller.firstTime = true
             controller.players = players
+            controller.team = team
         }
         if(segue.identifier == "goToBoxScore") {
             if let indexPath = self.pastGamesTable.indexPathForSelectedRow {
                 let controller = segue.destinationViewController as! BoxScoreViewController
-                controller.game = indexPath.row
+                
+                print(allGames.count)
+                
+                var gameID = 0
+                for(var i=0; i<allGames.count; i++) {
+                    print(String(i) + " " + String(allGames[i].valueForKey("id") as! Int))
+                    if(allGames[i].valueForKey("id") as! Int == games[indexPath.row].valueForKey("id") as! Int) {
+                        controller.game = allGames[i].valueForKey("id") as! Int
+                        gameID = allGames[i].valueForKey("id") as! Int
+                    }
+                }
+                
+                print("GAME: " + String(gameID))
                 
                 let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
                 let managedContext = appDelegate.managedObjectContext
@@ -289,14 +377,15 @@ class ViewController: UIViewController, UITableViewDataSource {
                 var playersFromGame = [NSManagedObject]()
                 
                 for(var i=0; i<pList.count; i++) {
-                    if(pList[i].valueForKey("game") as! Int == indexPath.row) {
+                    print(pList[i].valueForKey("game"))
+                    if(pList[i].valueForKey("game") as! Int == gameID) {
                         playersFromGame.insert(pList[i], atIndex: playersFromGame.count)
                     }
                 }
     
                 controller.players = playersFromGame
+                controller.team = team
             }
         }
     }
 }
-

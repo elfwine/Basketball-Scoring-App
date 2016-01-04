@@ -5,11 +5,19 @@
         <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="location" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="opponent" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="team" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+    </entity>
+    <entity name="Joint" syncable="YES">
+        <attribute name="playername" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="teamnum" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
     </entity>
     <entity name="Player" syncable="YES">
         <attribute name="assists" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="blocks" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="game" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="inlineup" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="madefts" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="missedfts" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="missedshots" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="rebounds" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
@@ -18,8 +26,14 @@
         <attribute name="turnovers" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
         <attribute name="twopointersmade" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
     </entity>
+    <entity name="Team" syncable="YES">
+        <attribute name="id" optional="YES" attributeType="Integer 64" defaultValueString="0" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <elements>
-        <element name="Game" positionX="-63" positionY="-18" width="128" height="105"/>
-        <element name="Player" positionX="-36" positionY="27" width="128" height="195"/>
+        <element name="Game" positionX="-63" positionY="-18" width="128" height="120"/>
+        <element name="Joint" positionX="-36" positionY="99" width="128" height="75"/>
+        <element name="Player" positionX="-36" positionY="27" width="128" height="240"/>
+        <element name="Team" positionX="-45" positionY="90" width="128" height="75"/>
     </elements>
 </model>

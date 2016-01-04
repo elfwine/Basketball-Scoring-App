@@ -20,6 +20,7 @@ class PlayerViewController: UIViewController {
     var player = Int()
     var opponent = String()
     var date = String()
+    var team = Int()
     
     
     let blankLabel = UILabel()
@@ -30,7 +31,7 @@ class PlayerViewController: UIViewController {
     let stealsLabel = UILabel()
     let blocksLabel = UILabel()
     let turnoversLabel = UILabel()
-    let fantasyPointsLabel = UILabel()
+    let freeThrowsLabel = UILabel()
     
     
     let gameLabel = UILabel()
@@ -41,7 +42,7 @@ class PlayerViewController: UIViewController {
     let gStealsLabel = UILabel()
     let gBlocksLabel = UILabel()
     let gTurnoversLabel = UILabel()
-    let gFantasyPointsLabel = UILabel()
+    let gFreeThrowsLabel = UILabel()
     
     let averageLabel = UILabel()
     let aPointsLabel = UILabel()
@@ -51,7 +52,7 @@ class PlayerViewController: UIViewController {
     let aStealsLabel = UILabel()
     let aBlocksLabel = UILabel()
     let aTurnoversLabel = UILabel()
-    let aFantasyPointsLabel = UILabel()
+    let aFreeThrowsLabel = UILabel()
     
     
     let NathanHale = ["Sam Leach","Sam Nasralla","Julien Streetman","Ishmael Simpson", "Trey McAdams","Stieg Smith", "TJ Williams","Dempsey Hope","Kateel Barnett","Malcolm Gulyard","Khepra Mims"]
@@ -76,8 +77,8 @@ class PlayerViewController: UIViewController {
     func addLabels() {
         
         //creates static labels
-        let labels = [blankLabel, pointsLabel,shootingLabel,assistsLabel,reboundsLabel,stealsLabel,blocksLabel,turnoversLabel,fantasyPointsLabel]
-        let labelsText = ["","Points", "Shooting", "Assists", "Rebounds", "Steals","Blocks","Turnovers","Fantasy"]
+        let labels = [blankLabel, pointsLabel,shootingLabel,freeThrowsLabel, assistsLabel,reboundsLabel,stealsLabel,blocksLabel,turnoversLabel]
+        let labelsText = ["","Points", "Shooting", "Free Throws", "Assists", "Rebounds", "Steals","Blocks","Turnovers"]
         for(var i=0; i<labels.count; i++) {
             let label = labels[i]
             label.frame = CGRectMake(((self.view.frame.size.width / 9) * CGFloat(i)), (self.view.frame.size.height / 5), (self.view.frame.size.width / 9), (self.view.frame.size.height / 5) - 4)
@@ -88,20 +89,20 @@ class PlayerViewController: UIViewController {
         
         //creates current game labels
         
-        let gameLabels = [gameLabel, gPointsLabel,gShootingLabel,gAssistsLabel,gReboundsLabel,gStealsLabel,gBlocksLabel,gTurnoversLabel,gFantasyPointsLabel]
-        let gamePoints = ((players[player].valueForKey("twopointersmade") as! Int) * 2) + (((players[player].valueForKey("threepointersmade") as! Int) * 3))
+        let gameLabels = [gameLabel, gPointsLabel,gShootingLabel,gFreeThrowsLabel,gAssistsLabel,gReboundsLabel,gStealsLabel,gBlocksLabel,gTurnoversLabel]
+        let gamePoints = ((players[player].valueForKey("twopointersmade") as! Int) * 2) + (((players[player].valueForKey("threepointersmade") as! Int) * 3)) + (players[player].valueForKey("madefts") as! Int)
         let madeShots = (players[player].valueForKey("twopointersmade") as! Int) + (players[player].valueForKey("threepointersmade") as! Int)
         let missedShots = players[player].valueForKey("missedshots") as! Int
         let totalShots = missedShots + madeShots
         let shooting = String(madeShots) + "-" + String(totalShots)
+        let ftShooting = String((players[player].valueForKey("madefts") as! Int)) + "-" + String(((players[player].valueForKey("madefts") as! Int) + (players[player].valueForKey("missedfts") as! Int)))
         let assists = players[player].valueForKey("assists") as! Int
         let rebounds = players[player].valueForKey("rebounds") as! Int
         let steals = players[player].valueForKey("steals") as! Int
         let blocks = players[player].valueForKey("blocks") as! Int
         let turnovers = players[player].valueForKey("turnovers") as! Int
-        let fantasyPoints = gamePoints - missedShots + assists + rebounds + steals + blocks - turnovers
         
-        let gameLabelsText = ["Game",String(gamePoints),shooting,String(assists),String(rebounds), String(steals), String(blocks), String(turnovers), String(fantasyPoints)]
+        let gameLabelsText = ["Game",String(gamePoints),shooting,ftShooting,String(assists),String(rebounds), String(steals), String(blocks), String(turnovers)]
         
         for(var i=0; i<labels.count; i++) {
             let label = gameLabels[i]
@@ -117,7 +118,7 @@ class PlayerViewController: UIViewController {
         UIApplication.sharedApplication().delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
         
-        let averageLabels = [averageLabel, aPointsLabel,aShootingLabel,aAssistsLabel,aReboundsLabel,aStealsLabel,aBlocksLabel,aTurnoversLabel,aFantasyPointsLabel]
+        let averageLabels = [averageLabel, aPointsLabel,aShootingLabel, aFreeThrowsLabel ,aAssistsLabel,aReboundsLabel,aStealsLabel,aBlocksLabel,aTurnoversLabel]
         
         let fetchReq = NSFetchRequest(entityName:"Player")
         let err: NSError?
@@ -140,12 +141,14 @@ class PlayerViewController: UIViewController {
         var aSteals = 0
         var aBlocks = 0
         var aTurnovers = 0
-        var aFantasyPoints = 0
+        var aMadeFTs = 0
+        var aMissedFTs = 0
+        
         var c = 0
         
         for(var i=0; i<allP.count; i++) {
             if((allP[i].valueForKey("name") as! String) == (players[player].valueForKey("name") as! String)) {
-                let tPoints = ((allP[i].valueForKey("twopointersmade") as! Int) * 2) + (((allP[i].valueForKey("threepointersmade") as! Int) * 3))
+                let tPoints = ((allP[i].valueForKey("twopointersmade") as! Int) * 2) + (((allP[i].valueForKey("threepointersmade") as! Int) * 3)) + (allP[i].valueForKey("madefts") as! Int)
                 let tMadeShots = (allP[i].valueForKey("twopointersmade") as! Int) + (allP[i].valueForKey("threepointersmade") as! Int)
                 let tMissedShots = (allP[i].valueForKey("missedshots") as! Int)
                 let tAssists = (allP[i].valueForKey("assists") as! Int)
@@ -153,6 +156,9 @@ class PlayerViewController: UIViewController {
                 let tSteals = (allP[i].valueForKey("steals") as! Int)
                 let tBlocks = (allP[i].valueForKey("blocks") as! Int)
                 let tTurnovers = (allP[i].valueForKey("turnovers") as! Int)
+                let tMadeFTs = (allP[i].valueForKey("madefts") as! Int)
+                let tMissedFTs = (allP[i].valueForKey("missedfts") as! Int)
+                
                 
                 aPoints = aPoints + tPoints
                 aMadeShots = aMadeShots + tMadeShots
@@ -163,7 +169,8 @@ class PlayerViewController: UIViewController {
                 aSteals = aSteals + tSteals
                 aBlocks = aBlocks + tBlocks
                 aTurnovers = aTurnovers + tTurnovers
-                aFantasyPoints = aFantasyPoints + tPoints - tMissedShots + tAssists + tRebounds + tSteals + tBlocks - tTurnovers
+                aMadeFTs = aMadeFTs + tMadeFTs
+                aMissedFTs = aMissedFTs + tMissedFTs
                 c++
             }
         }
@@ -176,8 +183,10 @@ class PlayerViewController: UIViewController {
         var aReboundsF = Float(aRebounds)
         var aStealsF = Float(aSteals)
         var aTurnoversF = Float(aTurnovers)
-        var aFantasyPointsF = Float(aFantasyPoints)
         var aBlocksF = Float(aBlocks)
+        var aMadeFTsF = Float(aMadeFTs)
+        var aTotalFTsF = Float(aMissedFTs) + aMadeFTsF
+        
         
         aPointsF = aPointsF / counter
         aMadeShotsF = aMadeShotsF / counter
@@ -186,12 +195,15 @@ class PlayerViewController: UIViewController {
         aReboundsF = aReboundsF / counter
         aStealsF = aStealsF / counter
         aTurnoversF = aTurnoversF / counter
-        aFantasyPointsF = aFantasyPointsF / counter
         aBlocksF = aBlocksF / counter
+        aMadeFTsF = aMadeFTsF / counter
+        aTotalFTsF = aTotalFTsF / counter
         
         let aShooting = String(aMadeShotsF) + "-" + String(aTotalShotsF)
         
-        let averageLabelsText = ["Average",String(aPointsF),aShooting,String(aAssistsF),String(aReboundsF), String(aStealsF), String(aBlocksF), String(aTurnoversF), String(aFantasyPointsF)]
+        let aFTShooting = String(aMadeFTsF) + "-" + String(aTotalFTsF)
+        
+        let averageLabelsText = ["Average",String(aPointsF),aShooting, aFTShooting, String(aAssistsF),String(aReboundsF), String(aStealsF), String(aBlocksF), String(aTurnoversF)]
         
         for(var i=0; i<labels.count; i++) {
             let label = averageLabels[i]
@@ -206,32 +218,33 @@ class PlayerViewController: UIViewController {
     
     func updateGameLabels() {
         
-        let gameLabels = [gameLabel, gPointsLabel,gShootingLabel,gAssistsLabel,gReboundsLabel,gStealsLabel,gBlocksLabel,gTurnoversLabel,gFantasyPointsLabel]
-        let gamePoints = ((players[player].valueForKey("twopointersmade") as! Int) * 2) + (((players[player].valueForKey("threepointersmade") as! Int) * 3))
+        let gameLabels = [gameLabel, gPointsLabel,gShootingLabel,gFreeThrowsLabel,gAssistsLabel,gReboundsLabel,gStealsLabel,gBlocksLabel,gTurnoversLabel]
+        let gamePoints = ((players[player].valueForKey("twopointersmade") as! Int) * 2) + (((players[player].valueForKey("threepointersmade") as! Int) * 3)) + (players[player].valueForKey("madefts") as! Int)
         let madeShots = (players[player].valueForKey("twopointersmade") as! Int) + (players[player].valueForKey("threepointersmade") as! Int)
         let missedShots = players[player].valueForKey("missedshots") as! Int
         let totalShots = missedShots + madeShots
         let shooting = String(madeShots) + "-" + String(totalShots)
+        let ftShooting = String((players[player].valueForKey("madefts") as! Int)) + "-" + String(((players[player].valueForKey("madefts") as! Int) + (players[player].valueForKey("missedfts") as! Int)))
         let assists = players[player].valueForKey("assists") as! Int
         let rebounds = players[player].valueForKey("rebounds") as! Int
         let steals = players[player].valueForKey("steals") as! Int
         let blocks = players[player].valueForKey("blocks") as! Int
         let turnovers = players[player].valueForKey("turnovers") as! Int
-        let fantasyPoints = gamePoints - missedShots + assists + rebounds + steals + blocks - turnovers
         
-        let gameLabelsText = ["Game",String(gamePoints),shooting,String(assists),String(rebounds), String(steals), String(blocks), String(turnovers), String(fantasyPoints)]
+        let gameLabelsText = ["Game",String(gamePoints),shooting,ftShooting,String(assists),String(rebounds), String(steals), String(blocks), String(turnovers)]
         
-        for(var i=0; i<gameLabelsText.count; i++) {
+        for(var i=0; i<gameLabels.count; i++) {
             let label = gameLabels[i]
             label.text = gameLabelsText[i]
         }
         
+        //average row
         
         let appDelegate =
         UIApplication.sharedApplication().delegate as! AppDelegate
         let managedContext = appDelegate.managedObjectContext
         
-        let averageLabels = [averageLabel, aPointsLabel,aShootingLabel,aAssistsLabel,aReboundsLabel,aStealsLabel,aBlocksLabel,aTurnoversLabel,aFantasyPointsLabel]
+        let averageLabels = [averageLabel, aPointsLabel,aShootingLabel, aFreeThrowsLabel ,aAssistsLabel,aReboundsLabel,aStealsLabel,aBlocksLabel,aTurnoversLabel]
         
         let fetchReq = NSFetchRequest(entityName:"Player")
         let err: NSError?
@@ -254,12 +267,14 @@ class PlayerViewController: UIViewController {
         var aSteals = 0
         var aBlocks = 0
         var aTurnovers = 0
-        var aFantasyPoints = 0
+        var aMadeFTs = 0
+        var aMissedFTs = 0
+        
         var c = 0
         
         for(var i=0; i<allP.count; i++) {
             if((allP[i].valueForKey("name") as! String) == (players[player].valueForKey("name") as! String)) {
-                let tPoints = ((allP[i].valueForKey("twopointersmade") as! Int) * 2) + (((allP[i].valueForKey("threepointersmade") as! Int) * 3))
+                let tPoints = ((allP[i].valueForKey("twopointersmade") as! Int) * 2) + (((allP[i].valueForKey("threepointersmade") as! Int) * 3)) + (allP[i].valueForKey("madefts") as! Int)
                 let tMadeShots = (allP[i].valueForKey("twopointersmade") as! Int) + (allP[i].valueForKey("threepointersmade") as! Int)
                 let tMissedShots = (allP[i].valueForKey("missedshots") as! Int)
                 let tAssists = (allP[i].valueForKey("assists") as! Int)
@@ -267,6 +282,9 @@ class PlayerViewController: UIViewController {
                 let tSteals = (allP[i].valueForKey("steals") as! Int)
                 let tBlocks = (allP[i].valueForKey("blocks") as! Int)
                 let tTurnovers = (allP[i].valueForKey("turnovers") as! Int)
+                let tMadeFTs = (allP[i].valueForKey("madefts") as! Int)
+                let tMissedFTs = (allP[i].valueForKey("missedfts") as! Int)
+                
                 
                 aPoints = aPoints + tPoints
                 aMadeShots = aMadeShots + tMadeShots
@@ -277,7 +295,8 @@ class PlayerViewController: UIViewController {
                 aSteals = aSteals + tSteals
                 aBlocks = aBlocks + tBlocks
                 aTurnovers = aTurnovers + tTurnovers
-                aFantasyPoints = aFantasyPoints + tPoints - tMissedShots + tAssists + tRebounds + tSteals + tBlocks - tTurnovers
+                aMadeFTs = aMadeFTs + tMadeFTs
+                aMissedFTs = aMissedFTs + tMissedFTs
                 c++
             }
         }
@@ -290,8 +309,10 @@ class PlayerViewController: UIViewController {
         var aReboundsF = Float(aRebounds)
         var aStealsF = Float(aSteals)
         var aTurnoversF = Float(aTurnovers)
-        var aFantasyPointsF = Float(aFantasyPoints)
         var aBlocksF = Float(aBlocks)
+        var aMadeFTsF = Float(aMadeFTs)
+        var aMissedFTsF = Float(aMissedFTs)
+        
         
         aPointsF = aPointsF / counter
         aMadeShotsF = aMadeShotsF / counter
@@ -300,12 +321,15 @@ class PlayerViewController: UIViewController {
         aReboundsF = aReboundsF / counter
         aStealsF = aStealsF / counter
         aTurnoversF = aTurnoversF / counter
-        aFantasyPointsF = aFantasyPointsF / counter
         aBlocksF = aBlocksF / counter
+        aMadeFTsF = aMadeFTsF / counter
+        aMissedFTsF = aMissedFTsF / counter
         
         let aShooting = String(aMadeShotsF) + "-" + String(aTotalShotsF)
         
-        let averageLabelsText = ["Average",String(aPointsF),aShooting,String(aAssistsF),String(aReboundsF), String(aStealsF), String(aBlocksF), String(aTurnoversF), String(aFantasyPointsF)]
+        let aFTShooting = String(aMadeFTsF) + "-" + String(aMissedFTsF)
+        
+        let averageLabelsText = ["Average",String(aPointsF),aShooting, aFTShooting, String(aAssistsF),String(aReboundsF), String(aStealsF), String(aBlocksF), String(aTurnoversF)]
         
         for(var i=0; i<averageLabels.count; i++) {
             let label = averageLabels[i]
@@ -418,6 +442,7 @@ class PlayerViewController: UIViewController {
             let controller = segue.destinationViewController as! BoxScoreViewController
             controller.game = game
             controller.players = players
+            controller.team = team
         }
     }
 }

@@ -16,6 +16,7 @@ class SubViewController: UIViewController, UITableViewDataSource, UITableViewDel
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var inTable: UITableView!
     
+    var team = Int()
     var lineup = [String]()
     var bench = [String]()
     var counter = 0
@@ -27,13 +28,50 @@ class SubViewController: UIViewController, UITableViewDataSource, UITableViewDel
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        for(var i=0; i<bench.count; i++) {
-            print(bench[i])
-        }
-
         outTable.dataSource = self
         inTable.dataSource = self
         doneButton.addTarget(self, action: "done:", forControlEvents: UIControlEvents.TouchUpInside)
+        
+        
+        let appDelegate =
+        UIApplication.sharedApplication().delegate as! AppDelegate
+        let managedContext = appDelegate.managedObjectContext
+        let fetchRequest = NSFetchRequest(entityName:"Game")
+        let error: NSError?
+        var fetchedResults = [NSManagedObject]()
+        do {
+            fetchedResults = try managedContext.executeFetchRequest(fetchRequest) as! [NSManagedObject]
+        } catch let error as NSError {
+            
+            print("Fetch failed: \(error.localizedDescription)")
+        }
+        games = fetchedResults
+        
+        
+        let fetchReq = NSFetchRequest(entityName:"Player")
+        let err: NSError?
+        var fetchedR = [NSManagedObject]()
+        do {
+            fetchedR = try managedContext.executeFetchRequest(fetchReq) as! [NSManagedObject]
+        } catch let err as NSError {
+            
+            print("Fetch failed: \(err.localizedDescription)")
+        }
+        players = fetchedR
+        
+        lineup = [String]()
+        bench = [String]()
+        
+        for(var i=0; i<players.count; i++) {
+            if((players[i].valueForKey("game") as! Int) == game) {
+                print("Player's game: " + String(players[i].valueForKey("game") as! Int))
+                if((players[i].valueForKey("inlineup") as! Bool)) {
+                    lineup.append(players[i].valueForKey("name") as! String)
+                } else {
+                    bench.append(players[i].valueForKey("name") as! String)
+                }
+            }
+        }
     }
     
     func done(sender: UIButton) {
@@ -88,6 +126,7 @@ class SubViewController: UIViewController, UITableViewDataSource, UITableViewDel
             controller.bench = bench
             controller.games = games
             controller.players = players
+            controller.team = team
         }
     }
     
@@ -95,7 +134,32 @@ class SubViewController: UIViewController, UITableViewDataSource, UITableViewDel
         let player = bench[sender.tag]
         bench.removeAtIndex(sender.tag)
         lineup.append(player)
-
+        
+        for(var i=0; i<players.count; i++) {
+            if((players[i].valueForKey("name") as! String) == player) {
+                if((players[i].valueForKey("game") as! Int) == game) {
+                //CoreData stuff
+                let appDelegate =
+                UIApplication.sharedApplication().delegate as! AppDelegate
+                let managedContext = appDelegate.managedObjectContext
+                let entity =  NSEntityDescription.entityForName("Player",
+                    inManagedObjectContext:
+                    managedContext)
+                
+                players[i].setValue(true, forKey: "inlineup")
+                
+                var error: NSError?
+                do {
+                    try managedContext.save()
+                } catch var error1 as NSError {
+                    error = error1
+                    print("Could not save \(error), \(error?.userInfo)")
+                }
+                
+                break;
+                }
+            }
+        }
         self.outTable.reloadData()
         self.inTable.reloadData()
     }
@@ -104,7 +168,30 @@ class SubViewController: UIViewController, UITableViewDataSource, UITableViewDel
         let player = lineup[sender.tag]
         lineup.removeAtIndex(sender.tag)
         bench.append(player)
-
+        for(var i=0; i<players.count; i++) {
+            if((players[i].valueForKey("name") as! String) == player) {
+                if((players[i].valueForKey("game") as! Int) == game) {
+                //CoreData stuff
+                let appDelegate =
+                UIApplication.sharedApplication().delegate as! AppDelegate
+                let managedContext = appDelegate.managedObjectContext
+                let entity =  NSEntityDescription.entityForName("Player",
+                    inManagedObjectContext:
+                    managedContext)
+                
+                players[i].setValue(false, forKey: "inlineup")
+                
+                var error: NSError?
+                do {
+                    try managedContext.save()
+                } catch var error1 as NSError {
+                    error = error1
+                    print("Could not save \(error), \(error?.userInfo)")
+                }
+                break;
+                }
+            }
+        }
         self.outTable.reloadData()
         self.inTable.reloadData()
     }
